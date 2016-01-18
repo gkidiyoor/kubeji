@@ -53,5 +53,12 @@ Sample config file :
 - post:
 
 ```
+How to run ?
+Set ENV for access key and AWS secret
+```
+ cd bin
+ python awskube.py "../layout/kube_t.yaml"
+```
+ 
 
 
