@@ -13,7 +13,7 @@ It has features to
 - extract variable from AWS-CLI output and use them in next instance launch(uses jinja2 syntax, very useful for static configuration)
 
 Sample config file :
--- start --
+`
 ---
 - pre:
     create_key_pair:
@@ -52,7 +52,6 @@ Sample config file :
 
 - post:
 
-
--- END --
+`
 
 
