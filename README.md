@@ -35,7 +35,7 @@ Sample config file :
     #      - 22
     #      - 80
     #      - 4500
-    create_load_balancer: #my-kube-b-1739654208.us-east-1.elb.amazonaws.com
+    create_load_balancer: 
       - name: "my-kube-b"
         listeners: "Protocol=HTTP,LoadBalancerPort=8080,InstanceProtocol=HTTP,InstancePort=8080"
         region: "us-east-1"
@@ -50,10 +50,10 @@ Sample config file :
     key_name: "kubernetes_key_bangalore"
     region: "us-east-1"
     security_group: "kubernetes_bangalore"
-    availability_zone: "us-east-1a" 
+    availability_zone: "us-east-1a"  # not implemented
     instance_type: "m3.medium"
     user_data: 
-      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://
+      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://, jinja2 syntax is evaluvated here
       type: "yaml"   
     extract:
       - instance_m_id_1: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
@@ -67,7 +67,7 @@ Sample config file :
     security_group: "kubernetes_bangalore"
     instance_type: "m3.medium"
     user_data: 
-      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://
+      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://, jinja2 syntax is evaluvated here
       type: "yaml" 
     extract:
       - instance_m_id_2: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
@@ -80,7 +80,7 @@ Sample config file :
     security_group: "kubernetes_bangalore"
     instance_type: "m3.medium"
     user_data: 
-      file: "../cloud_config/loadbalance_kube_s.yaml" # Do not have file://
+      file: "../cloud_config/loadbalance_kube_s.yaml" # Do not have file://, jinja2 syntax is evaluvated here
       type: "yaml" 
     extract:
       - instance_s_id_1: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
@@ -107,7 +107,6 @@ Sample config file :
         tags: 
           - "Key=Name,Value=kube_blore_s_1"
           - "Key=Contact, Value=gkidiyoor@apigee.com"
-
 
 ```
 How to run ?
