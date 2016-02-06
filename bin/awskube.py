@@ -13,6 +13,7 @@ import jinja2
 #TODO use environment variables for path 
 
 extracted = {}
+
 def printit(s):
 	print(termcolor.colored(s,'red',attrs=['bold']))
 
@@ -28,8 +29,10 @@ def pre(config):
 			create_key_pairs(config['create_key_pair'])
 		if 'create_security_group' in config.keys():
 			create_security_groups(config['create_security_group'])
+		if 'create_load_balancer' in config.keys():
+			create_load_balancer(config['create_load_balancer'])
 	else:
-		printit("** No pre setup")	
+		printit("** No pre tasks")	
 
 def main(config):
 	if config != None:
@@ -58,14 +61,18 @@ def main(config):
 
 
 	else:
-		printit("** No main")
+		printit("** No main tasks")
 
 def post(config):
 	printit("** Exc post setup")
 	if config != None:
-		pass
+		if 'register_instance_with_load_balancer' in config.keys():
+			register_instance_with_load_balancer(config['register_instance_with_load_balancer'])
+		if 'tag_resources' in config.keys():
+			tag_resources(config['tag_resources'])
 	else:
-		pass
+		printit("** No post tasks")
+
 
 def create_key_pairs(config):
 	printit("\t** Creating key-pair")
@@ -88,6 +95,34 @@ def create_security_groups(config):
 		#aws ec2 authorize-security-group-ingress --group-name kubernetes --source-security-group-name kubernetes
 		print(subprocess.check_output(["aws","ec2","authorize-security-group-ingress","--group-name", dobj['name'],"--source-security-group-name",dobj['name'],"--region",dobj['region']]))
 
+def create_load_balancer(config):
+	printit("\t** Creating load balancer")
+	for dobj in config:
+		l = ["aws","elb","create-load-balancer","--load-balancer-name",dobj['name'],"--listeners",dobj['listeners'],"--region", dobj['region'],"--availability-zones"]
+		for i in dobj['availability_zones']:
+			l.append(i)
+		#aws elb create-load-balancer --load-balancer-name my-load-balancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --subnets subnet-15aaab61 --security-groups sg-a61988c3
+		output = subprocess.check_output(l)
+		print(output)
+		extracted['lb_url'] = dpath.util.get(json.loads(output), '/DNSName')
+
+		
+def register_instance_with_load_balancer(config):
+	printit("\t** Attaching instances with load balancer")
+ 	for dobj in config:
+	 	for i in dobj['instances']:
+ 		 	#aws elb register-instances-with-load-balancer --load-balancer-name my-load-balancer --instances i-d6f6fae3
+ 		 	print(subprocess.check_output(["aws","elb","register-instances-with-load-balancer","--load-balancer-name",dobj['name'],"--instances",extracted[i]]))
+
+
+def tag_resources(config):
+	printit("\t** Tagging resources")
+	for dobj in config:
+		#aws ec2 create-tags --resources ami-78a54011 --tags Key=Stack,Value=production  
+		for i in dobj['tags']:
+			print(subprocess.check_output(["aws","ec2","create-tags","--resources",extracted[dobj['id']],'--tags',i]))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Create kubernetes cluster')
     parser.add_argument('layoutFile', type=str, help=': Path to the layout file')
@@ -97,17 +132,39 @@ if __name__ == '__main__':
     #TODO
     # validation of layout file should be done
 
-    if 'pre' in layout[0].keys():
-    	pre(layout[0]['pre'])	
+
+    if 'vars' in layout[0].keys():
+    	for i in layout[0]['vars']:
+    		extracted[i.keys()[0]]=i[i.keys()[0]]
     else:
+    	print("var section not found, clue: have a empty var section")
     	sys.exit(0)
 
-    if 'main' in layout[1].keys():
-    	main(layout[1]['main'])	
+    if 'pre' in layout[1].keys():
+    	#pre(layout[1]['pre'])	
+    	pass
     else:
+    	print("pre section not found, clue: have a empty var section")
     	sys.exit(0)
 
-    if 'post' in layout[2].keys():
-    	post(layout[2]['post'])	
+    if 'main' in layout[2].keys():
+    	#main(layout[2]['main'])	
+    	pass
     else:
+    	print("main section not found, clue: have a empty var section")
     	sys.exit(0)
+
+    if 'post' in layout[3].keys():
+    	extracted={'instance_s_id_1': 'i-d7e57557', 'instance_m_id_2': 'i-79e474f9', 'instance_m_id_1': 'i-71e474f1', 'lb_url': 'my-kube-b-953618755.us-east-1.elb.amazonaws.com', 'discovery': 'https://discovery.etcd.io/c37443bb1da5ac33d54063295a10427d'}
+    	post(layout[3]['post'])
+    else:
+    	print("main section not found, clue: have a empty var section")
+    	sys.exit(0)
+    
+    #For dangling else
+    if(True):
+    	pass
+
+	print(termcolor.colored("** Completed **",'green',attrs=['bold']))
+
+
