@@ -29,6 +29,7 @@
     key_name: "kubernetes_key_bangalore"
     region: "us-east-1"
     security_group: "kubernetes_bangalore"
+    availability_zone: "us-east-1a" 
     instance_type: "m3.medium"
     user_data: 
       file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://
@@ -41,6 +42,7 @@
     image_id: "ami-94b49bfe"
     key_name: "kubernetes_key_bangalore"
     region: "us-east-1"
+    availability_zone: "us-east-1b" # not implememted
     security_group: "kubernetes_bangalore"
     instance_type: "m3.medium"
     user_data: 
@@ -53,6 +55,7 @@
     image_id: "ami-94b49bfe"
     key_name: "kubernetes_key_bangalore"
     region: "us-east-1"
+    availability_zone: "us-east-1c"
     security_group: "kubernetes_bangalore"
     instance_type: "m3.medium"
     user_data: 

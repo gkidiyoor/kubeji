@@ -6,11 +6,16 @@ Dependencies:
 - Python2.7
 - Python jinja2, dpath,pyyaml,termcolor module
 
-This is a wrapper around AWS CLI that allow you to write a configuration YAML file for set up a kubernetes cluster from local command line.
-It has features to 
+This is a wrapper around AWS CLI that allow you to write a configuration YAML file with jinja2 support for automating setting up of kubernetes cluster.
+
+It can
 - create key-pair
 - create security groups
+- create load balancer
 - extract variable from AWS-CLI output and use them in next instance launch(uses jinja2 syntax, very useful for static configuration)
+- launch resources with cloud-config(cloud-config is dynamically updated with jinja2 syntax)
+- attach instance to load balancer
+- tag resources
 
 Sample config file :
 ```

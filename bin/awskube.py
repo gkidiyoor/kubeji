@@ -141,21 +141,20 @@ if __name__ == '__main__':
     	sys.exit(0)
 
     if 'pre' in layout[1].keys():
-    	#pre(layout[1]['pre'])	
+    	pre(layout[1]['pre'])	
     	pass
     else:
     	print("pre section not found, clue: have a empty var section")
     	sys.exit(0)
 
     if 'main' in layout[2].keys():
-    	#main(layout[2]['main'])	
+    	main(layout[2]['main'])	
     	pass
     else:
     	print("main section not found, clue: have a empty var section")
     	sys.exit(0)
 
     if 'post' in layout[3].keys():
-    	extracted={'instance_s_id_1': 'i-d7e57557', 'instance_m_id_2': 'i-79e474f9', 'instance_m_id_1': 'i-71e474f1', 'lb_url': 'my-kube-b-953618755.us-east-1.elb.amazonaws.com', 'discovery': 'https://discovery.etcd.io/c37443bb1da5ac33d54063295a10427d'}
     	post(layout[3]['post'])
     else:
     	print("main section not found, clue: have a empty var section")
