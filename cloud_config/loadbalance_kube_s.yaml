@@ -39,7 +39,7 @@ coreos:
   etcd2:
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
     advertise-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    initial-cluster: master={{ lb_url }}:2380
+    initial-cluster: master=http://{{ lb_url }}:2380
     #discovery: https://discovery.etcd.io/8c8fde1ae29d0df0e0978d7c1db78c7b
     proxy: on
   fleet:			
@@ -57,6 +57,11 @@ coreos:
             [Service]
             ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"10.244.0.0/16", "Backend": {"Type": "vxlan"}}'
     - name: docker.service
+      drop-ins:
+        - name: 50-tls-verify.conf
+          content: |
+            [Service]
+            Environment="DOCKER_OPTS=-H=0.0.0.0:2376  --insecure-registry e2ecochin.apigee.com:80"
       command: start
     - name: setup-network-environment.service
       command: start
