@@ -1,6 +1,6 @@
 ---
 - vars: #pass to layout file, jinja2 syntax
-  - discovery: https://discovery.etcd.io/1e32d1b8412b111f3145f504bfb30856 # CHANGE EACH TIME
+  - discovery: https://discovery.etcd.io/c3e576337577834ce96620765e8ee110 # CHANGE EACH TIME
 
 - pre:
     #create_key_pair:

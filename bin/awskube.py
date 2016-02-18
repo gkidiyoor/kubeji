@@ -51,7 +51,7 @@ def main(config):
 				dobj['user_data'] = "file://temp.yaml"
 			
 			#aws ec2 run-instances --image-id ami-0006dd68 --key-name kubernetes-key --region us-east-1 --security-groups kubernetes --instance-type t2.micro --user-data master.yaml > master-created.json
-			inst_data_string = subprocess.check_output(["aws","ec2","run-instances","--image-id",dobj['image_id'],"--key-name",dobj['key_name'],"--region",dobj['region'],"--security-groups",dobj['security_group'],"--instance-type",dobj['instance_type'],"--user-data",dobj['user_data']])
+			inst_data_string = subprocess.check_output(["aws","ec2","run-instances","--image-id",dobj['image_id'],"--key-name",dobj['key_name'],"--region",dobj['region'],"--subnet-id",dobj['subnet_id'],"--security-group-ids",dobj['security_group'],"--instance-type",dobj['instance_type'],"--user-data",dobj['user_data']])
 			print(inst_data_string)
 			inst_data = json.loads(inst_data_string)
 			if 'extract' in dobj.keys():
@@ -65,6 +65,7 @@ def main(config):
 
 def post(config):
 	printit("** Exc post setup")
+	
 	if config != None:
 		if 'register_instance_with_load_balancer' in config.keys():
 			register_instance_with_load_balancer(config['register_instance_with_load_balancer'])
@@ -98,9 +99,8 @@ def create_security_groups(config):
 def create_load_balancer(config):
 	printit("\t** Creating load balancer")
 	for dobj in config:
-		l = ["aws","elb","create-load-balancer","--load-balancer-name",dobj['name'],"--listeners",dobj['listeners'],"--region", dobj['region'],"--availability-zones"]
-		for i in dobj['availability_zones']:
-			l.append(i)
+		l = ["aws","elb","create-load-balancer","--load-balancer-name",dobj['name'],"--security-groups",dobj['security_group'],"--subnet",dobj['subnet_id'],"--listeners",dobj['listeners'],"--region", dobj['region']]
+	
 		#aws elb create-load-balancer --load-balancer-name my-load-balancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --subnets subnet-15aaab61 --security-groups sg-a61988c3
 		output = subprocess.check_output(l)
 		print(output)

@@ -1,0 +1,24 @@
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "labels": {
+      "name": "ui-service"
+    },
+    "name": "ui-service"
+  },
+  "spec": {
+    "ports": [
+      {
+        "port": 8080,
+        "targetPort": 8080,
+        "protocol": "TCP",
+        "nodePort": 30080
+      }
+    ],
+    "selector": {
+      "app": "ui"
+    },
+    "type": "LoadBalancer"
+  }
+}

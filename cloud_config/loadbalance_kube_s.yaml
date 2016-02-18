@@ -61,7 +61,7 @@ coreos:
         - name: 50-tls-verify.conf
           content: |
             [Service]
-            Environment="DOCKER_OPTS=-H=0.0.0.0:2376  --insecure-registry e2ecochin.apigee.com:80"
+            Environment="DOCKER_OPTS=-H=0.0.0.0:2376  --insecure-registry e2ecochin.apigee.com:80 --insecure-registry cochin.apigee.net:443 --insecure-registry 52.34.61.67:80"
       command: start
     - name: setup-network-environment.service
       command: start

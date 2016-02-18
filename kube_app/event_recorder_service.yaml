@@ -1,0 +1,23 @@
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "labels": {
+      "name": "event-recorder-service"
+    },
+    "name": "event-recorder-service"
+  },
+  "spec": {
+    "ports": [
+      {
+        "port": 7237,
+        "targetPort": 7237,
+        "protocol": "TCP",
+      }
+    ],
+    "selector": {
+      "app": "event-recorder"
+    },
+    "type": "LoadBalancer"
+  }
+}

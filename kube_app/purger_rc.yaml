@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: purger
+spec:
+  replicas: 1
+  selector:
+    app: purger
+  template:
+    metadata:
+      labels:
+        app: purger
+    spec:
+      containers:
+      - name: purger
+        image: 52.34.61.67:80/apihealth-ui #check
+        command: ['supervisord']
+        ports:
+        - containerPort: 7237
+
+        env:
+        - name: PURGER_RELEASE
+          value: latest
+
+        - name: PNAME
+          value: apihealth_purger
+
+        - name: ENVNAME
+          value: dev
+
+        - name: LOGLEVEL
+          value: info
+
+        - name: UI_RELEASE
+          value: latest
+
+        - name: pghost
+          value: 52.72.48.33 
+
+        - name: pguser
+          value: postgres
+
+        - name: pgpwd
+          value: postgres
+
+        - name: redishost
+          value: 52.73.83.42
+
+        - name: redisport
+          value: "6377" #check uiredisport
+
+#ExecStart=/bin/bash -c 'source /etc/systemd/apihealth.conf && /usr/bin/docker run --rm -e PNAME=apihealth_purger -e DOCKER_HOST=${COREOS_PRIVATE_IPV4} -e ENVNAME=production -e LOGLEVEL=info -e pguser={{ apihealth_external['pguser'] }} -e pgpwd={{ apihealth_external['pgpwd'] }} -e redishost={{ apihealth_external['region'][instanceregion.stdout]['uiredishost'] }} --name purger_{{ item }} -v /var/log/apihealth:/var/log/apihealth -v /var/log/supervisor:/var/log/supervisor {{ docker_repo['name'] }}:{{ docker_repo['port'] }}/apihealth-ui:$PURGER_RELEASE supervisord'

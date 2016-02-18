@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: event-recorder
+spec:
+  replicas: 2
+  selector:
+    app: event-recorder
+  template:
+    metadata:
+      labels:
+        app: event-recorder
+    spec:
+      containers:
+      - name: event-recorder
+        image: 52.34.61.67:80/apihealth-ui #check
+        command: ['supervisord']
+        ports:
+        - containerPort: 7237
+
+        env:
+        - name: EVENT_RECORDER_RELEASE
+          value: latest
+
+        - name: PNAME
+          value: apihealth_event_recorder
+
+        - name: ENVNAME
+          value: dev
+
+        - name: LOGLEVEL
+          value: info
+
+        - name: UI_RELEASE
+          value: latest
+
+        - name: pghost
+          value: 52.72.48.33 
+
+        - name: pguser
+          value: postgres
+
+        - name: pgpwd
+          value: postgres
+
+        - name: redishost
+          value: 52.73.83.42
+
+        - name: redisport
+          value: "6377"
+
+
+
+# /usr/bin/docker run --rm -e PNAME=apihealth_event_recorder -e DOCKER_HOST=${COREOS_PRIVATE_IPV4} -e ENVNAME=production -e LOGLEVEL=info  -e pguser={{ apihealth_external['pguser'] }} -e pgpwd={{ apihealth_external['pgpwd'] }} -p {{ apihealth_external['event_recorder']['base'] }}{{ item }}:{{ apihealth_external['event_recorder']['port'] }} -e redishost={{ apihealth_external['region'][instanceregion.stdout]['uiredishost'] }} --name event_recorder_{{ item }} -v /var/log/apihealth:/var/log/apihealth -v /var/log/supervisor:/var/log/supervisor {{ docker_repo['name'] }}:{{ docker_repo['port'] }}/apihealth-ui:$EVENT_RECORDER_RELEASE supervisord'
+

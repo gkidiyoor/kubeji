@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: cache
+spec:
+  replicas: 1
+  selector:
+    app: cache
+  template:
+    metadata:
+      labels:
+        app: cache
+    spec:
+      containers:
+      - name: cache
+        image: 52.34.61.67:80/apihealth_pdx #check
+        command: ['supervisord']
+        ports:
+        - containerPort: 7237
+
+        env:
+        - name: CACHE_RELEASE
+          value: latest
+
+        - name: PNAME
+          value: apihealth_agent_cache
+
+        - name: ENVNAME
+          value: dev
+
+        - name: LOGLEVEL
+          value: info
+
+        - name: pghost
+          value: 52.72.48.33 
+
+        - name: pguser
+          value: postgres
+
+        - name: pgpwd
+          value: postgres
+        
+        - name: agentlocation
+          value: blahblah #check
+
+        - name: redishost
+          value: 52.73.83.42
+
+        - name: redisport
+          value: "6377" #check uiredisport
+          
+
+#ExecStart=/bin/bash -c 'source /etc/systemd/apihealth.conf && /usr/bin/docker run --rm -e PNAME=apihealth_agent_cache -e DOCKER_HOST=${COREOS_PRIVATE_IPV4} -e ENVNAME=production -e LOGLEVEL=info -e redishost={{ apihealth_agents['region'][instanceregion.stdout]['redishost'] }} -e agentlocation={{ apihealth_agents['region'][instanceregion.stdout]['agentlocation'] }} --name cache_{{ item }} -v /var/log/apihealth:/var/log/apihealth -v /var/log/supervisor:/var/log/supervisor {{ docker_repo['name'] }}:{{ docker_repo['port'] }}/apihealth:$CACHE_RELEASE supervisord'
