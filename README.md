@@ -1,4 +1,4 @@
-# Launch HA kubernetes cluster on AWS with a single layout file
+# Launch HA kubernetes cluster on AWS with a single layout file, and deploy an application 
 Learn to set up kubernetes cluster on aws. Automates the process of creating a HA master cluster and registering slaves using a load balancer.
 
 Dependencies:
