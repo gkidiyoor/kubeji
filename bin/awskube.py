@@ -99,7 +99,7 @@ def create_security_groups(config):
 def create_load_balancer(config):
 	printit("\t** Creating load balancer")
 	for dobj in config:
-		l = ["aws","elb","create-load-balancer","--load-balancer-name",dobj['name'],"--security-groups",dobj['security_group'],"--subnet",dobj['subnet_id'],"--listeners",dobj['listeners'],"--region", dobj['region']]
+		l = ["aws","elb","create-load-balancer","--load-balancer-name",dobj['name'],"--security-groups",dobj['security_group'],"--subnets",dobj['subnet_id'],"--listeners",dobj['listeners'],"--region", dobj['region']]
 	
 		#aws elb create-load-balancer --load-balancer-name my-load-balancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --subnets subnet-15aaab61 --security-groups sg-a61988c3
 		output = subprocess.check_output(l)
