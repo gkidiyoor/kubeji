@@ -1,0 +1,90 @@
+---
+- vars: #pass to layout file, jinja2 syntax
+  - discovery: https://discovery.etcd.io/7ecf124ee34a7240e8fd0be27c4c6957 # CHANGE EACH TIME
+
+- pre:
+    #create_key_pair:
+    #  - name: kubernetes_test_3
+    #    region: "us-east-1"
+    #create_security_group:
+    #  - name: kubernetes_test_2
+    #    description: "For test"
+    #    region: "us-east-1"
+    #    ingress:
+    #      - 22
+    #      - 80
+    #      - 4500
+    create_load_balancer: 
+      - name: "my-kube-multi"
+        listeners: "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 Protocol=HTTP,LoadBalancerPort=8080,InstanceProtocol=HTTP,InstancePort=8080"
+        region: "us-west-2"
+        security_group: "sg-8d5ffaea" #kube_blore
+        subnet_id: "subnet-06b8b571" 
+        availability_zones:
+          - us-west-2a
+          - us-west-2b
+
+- main:
+  - name: "master1"
+    image_id: "ami-abc82ecb"
+    key_name: "kidiyoor_oregon"
+    region: "us-west-2"
+    availability_zone: "us-west-2a"  # not implemented
+    subnet_id: "subnet-06b8b571" 
+    security_group: "sg-8d5ffaea" #kube_blore
+    instance_type: "t2.micro"
+    user_data: 
+      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://, jinja2 syntax is evaluvated here
+      type: "yaml"   
+    extract:
+      - instance_m_id_1: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
+
+  - name: "master2"
+    image_id: "ami-abc82ecb"
+    key_name: "kidiyoor_oregon"
+    region: "us-west-2"
+    availability_zone: "us-west-2b" # not implememted
+    security_group: "sg-8d5ffaea" #kube_blore
+    subnet_id: "subnet-cb5987af" 
+    instance_type: "t2.micro"
+    user_data: 
+      file: "../cloud_config/loadbalance_kube_m.yaml" # Do not have file://, jinja2 syntax is evaluvated here
+      type: "yaml" 
+    extract:
+      - instance_m_id_2: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
+ 
+  - name: "slave1"
+    image_id: "ami-abc82ecb"
+    key_name: "kidiyoor_oregon"
+    region: "us-west-2"
+    availability_zone: "us-west-2a"
+    security_group: "sg-8d5ffaea" #kube_blore
+    subnet_id: "subnet-06b8b571" 
+    instance_type: "t2.micro"
+    user_data: 
+      file: "../cloud_config/loadbalance_kube_s.yaml" # Do not have file://, jinja2 syntax is evaluvated here
+      type: "yaml" 
+    extract:
+      - instance_s_id_1: "Instances/0/InstanceId" # JSON path to extract IP from AWS CLI output
+
+- post: 
+    register_instance_with_load_balancer:
+      - name: "my-kube-multi"
+        instances:
+        - instance_m_id_1 #extracted variable
+        - instance_m_id_2 #extracted variable
+    tag_resources:
+      - id: instance_m_id_1
+        tags: 
+          - "Key=Name, Value=kube_ops_m_1"
+          - "Key=Contact, Value=gkidiyoor@apigee.com"
+    
+      - id: instance_m_id_2
+        tags: 
+          - "Key=Name,Value=kube_ops_m_2"
+          - "Key=Contact, Value=gkidiyoor@apigee.com"
+    
+      - id: instance_s_id_1
+        tags: 
+          - "Key=Name,Value=kube_ops_s_1"
+          - "Key=Contact, Value=gkidiyoor@apigee.com"
